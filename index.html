@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نشاط الكنيسة - دعم ذوي الاحتياجات الخاصة</title>
+    <link rel="stylesheet" href="styles.css">
+    <meta name="description" content="نشاط الكنيسة لدعم ذوي الاحتياجات الخاصة يتضمن خدمات متنوعة تشمل الدعم الاجتماعي، النقل الميسر، التعليم الخاص، والتوجيه الأسري.">
+</head>
+<body>
+    <main>
+        <section class="services">
+            <h1>خدماتنا</h1>
+            <p>اعرف المخدومين اكتر</p>
+            <div class="services-container">
+                <div class="service-box" style="background-image: url('images/1.JPG');" onclick="openModal('https://https://drive.google.com/file/d/1-0w_uSvrWXcxbMaXLu3Ds3JM2qkDdxsE/view?usp=sharing')">
+                    <div class="service-content">
+                        <h2>هاني اخو سمير</h2>
+                        <p>هو اقرب للطبيعي بس بيحتاج اهتمام</p>
+                    </div>
+                </div>
+                <div class="service-box" style="background-image: url('images/2.JPG');" onclick="openModal('https://https://drive.google.com/file/d/1-0w_uSvrWXcxbMaXLu3Ds3JM2qkDdxsE/view?usp=sharing')">
+                    <div class="service-content">
+                        <h2>سمير اخو هاني</h2>
+                        <p>هو اقرب للطبيعي بس بيحتاج اهتمام</p>
+                    </div>
+                </div>
+                <div class="service-box" style="background-image: url('images/3.JPG');" onclick="openModal('https://https://drive.google.com/file/d/1-0w_uSvrWXcxbMaXLu3Ds3JM2qkDdxsE/view?usp=sharing')">
+                    <div class="service-content">
+                        <h2>موريس</h2>
+                        <p>هو اقرب للطبيعي بس بيحتاج اهتمام</p>
+                    </div>
+                </div>
+                <div class="service-box" style="background-image: url('images/4.JPG');" onclick="openModal('https://https://drive.google.com/file/d/1-0w_uSvrWXcxbMaXLu3Ds3JM2qkDdxsE/view?usp=sharing')">
+                    <div class="service-content">
+                        <h2>رامي</h2>
+                        <p>هو اقرب للطبيعي بس بيحتاج اهتمام</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Video Modal -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <iframe id="videoFrame" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+        function openModal(videoUrl) {
+            document.getElementById("videoFrame").src = videoUrl;
+            document.getElementById("videoModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("videoFrame").src = "";
+            document.getElementById("videoModal").style.display = "none";
+        }
+    </script>
+</body>
+</html>

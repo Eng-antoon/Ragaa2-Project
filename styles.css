@@ -1,0 +1,131 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.services {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.services h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.services p {
+    font-size: 18px;
+    margin-bottom: 40px;
+    color: #007acc;
+}
+
+.services-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.service-box {
+    position: relative;
+    width: calc(100% - 40px); /* More flexible width */
+    max-width: 400px;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.2s;
+    cursor: pointer; /* Show pointer cursor on hover */
+}
+
+@media (min-width: 600px) {
+    .service-box {
+        width: calc(50% - 20px); /* Restore original width for larger screens */
+    }
+}
+
+.service-box:hover {
+    transform: scale(1.05);
+}
+
+.service-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.service-box:hover .service-content {
+    opacity: 1;
+}
+
+.service-content h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.service-content p {
+    font-size: 16px;
+    color: #ccc;
+    padding: 0 10px;
+    text-align: center;
+}
+
+/* Modal styles */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.9); 
+}
+
+.modal-content {
+    position: relative;
+    margin: auto;
+    padding: 0;
+    width: 80%;
+    max-width: 700px; 
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    color: #fff;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #999;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#videoFrame {
+    width: 100%;
+    height: 400px;
+}
