@@ -97,10 +97,7 @@ function setupEventListeners() {
                     const base64String = reader.result.split(',')[1];
                     const byteLength = base64String.length * (3/4);
 
-                    if (byteLength > 50000) { // 50KB limit
-                        alert('The image is too large. Please select a smaller image.');
-                        return;
-                    }
+                   
 
                     const cloudName = 'dtygoo4st'; // Your Cloudinary cloud name
                     const uploadPreset = 'ragaa2Images'; // Your Cloudinary upload preset
