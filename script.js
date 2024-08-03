@@ -55,38 +55,68 @@ document.getElementById('addChildForm').addEventListener('submit', function(even
         childVideo: formData.get('childVideo')
     };
 
-    // Upload image to Imgur
-    const clientId = '5499804b552a3b9'; // Your actual Imgur Client ID
-    const formDataImgur = new FormData();
-    formDataImgur.append('image', file);
+    // Compress the image if it's too large
+    new Compressor(file, {
+        quality: 0.6,
+        maxWidth: 800,
+        success(result) {
+            const reader = new FileReader();
+            reader.readAsDataURL(result);
+            reader.onload = function() {
+                const base64String = reader.result.split(',')[1];
+                const byteLength = base64String.length * (3/4);
 
-    fetch('https://api.imgur.com/3/upload', {
-        method: 'POST',
-        headers: {
-            Authorization: `Client-ID ${clientId}`
-        },
-        body: formDataImgur
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            templateParams.childImage = data.data.link;
+               
+                // Upload image to Imgur
+                const clientId = '5499804b552a3b9'; // Your actual Imgur Client ID
+                const formDataImgur = new FormData();
+                formDataImgur.append('image', result);
 
-            emailjs.send('service_evrq6po', 'template_hs8t13e', templateParams)
-                .then(function(response) {
-                    alert('تم إرسال البيانات بنجاح!');
-                    formModal.style.display = 'none';
-                    // Clear form fields
-                    document.getElementById('addChildForm').reset();
-                }, function(error) {
-                    alert('فشل في إرسال البيانات: ' + error.text);
+                fetch('https://api.imgur.com/3/upload', {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Client-ID ${clientId}`
+                    },
+                    body: formDataImgur
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const imgurUrl = data.data.link; // Direct link to the image
+
+                        templateParams.childImage = imgurUrl;
+
+                        const htmlSnippet = `
+<div class="service-box" style="background-image: url('${templateParams.childImage}');" onclick="openModal('${templateParams.childVideo}')">
+    <div class="service-content">
+        <h2>${templateParams.childName}</h2>
+        <p>${templateParams.childDescription}</p>
+    </div>
+</div>`;
+
+                        templateParams.htmlSnippet = htmlSnippet;
+
+                        emailjs.send('service_evrq6po', 'template_hs8t13e', templateParams)
+                            .then(function(response) {
+                                alert('تم إرسال البيانات بنجاح!');
+                                formModal.style.display = 'none';
+                                // Clear form fields
+                                document.getElementById('addChildForm').reset();
+                            }, function(error) {
+                                alert('فشل في إرسال البيانات: ' + error.text);
+                            });
+                    } else {
+                        alert('Failed to upload image. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                    alert('An error occurred while uploading the image. Please try again.');
                 });
-        } else {
-            alert('Failed to upload image. Please try again.');
-        }
-    })
-    .catch(error => {
-        console.error('Error uploading image:', error);
-        alert('An error occurred while uploading the image. Please try again.');
+            };
+        },
+        error(err) {
+            console.error(err.message);
+        },
     });
 });
