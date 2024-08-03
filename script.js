@@ -43,7 +43,7 @@ function truncateDescriptions() {
         const fullText = descriptionElem.textContent.trim();
         const words = fullText.split(/\s+/);
 
-        if (words.length > 20) {
+        if (words.length > 5) {
             const truncatedText = words.slice(0, 20).join(" ") + "...";
             descriptionElem.textContent = truncatedText;
 
@@ -97,32 +97,28 @@ function setupEventListeners() {
                     const base64String = reader.result.split(',')[1];
                     const byteLength = base64String.length * (3/4);
 
-                    if (byteLength > 10000000) { // 50KB limit
+                    if (byteLength > 50000) { // 50KB limit
                         alert('The image is too large. Please select a smaller image.');
                         return;
                     }
 
-                    const clientId = '5499804b552a3b9'; // Your actual Imgur Client ID
-                    const formDataImgur = new FormData();
-                    formDataImgur.append('image', result);
+                    const cloudName = 'dtygoo4st'; // Your Cloudinary cloud name
+                    const uploadPreset = 'ragaa2Images'; // Your Cloudinary upload preset
 
-                    fetch('https://api.imgur.com/3/upload', {
-                        method: 'POST',
-                        headers: {
-                            Authorization: `Client-ID ${clientId}`
-                        },
-                        body: formDataImgur
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            const imgurUrl = data.data.link;
+                    const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+                    const formDataCloudinary = new FormData();
+                    formDataCloudinary.append('file', result);
+                    formDataCloudinary.append('upload_preset', uploadPreset);
 
-                            templateParams.childImage = imgurUrl;
+                    axios.post(url, formDataCloudinary)
+                    .then(response => {
+                        const cloudinaryUrl = response.data.secure_url; // Direct link to the image
 
-                            const truncatedDescription = truncateDescription(templateParams.childDescription);
+                        templateParams.childImage = cloudinaryUrl;
 
-                            const htmlSnippet = `
+                        const truncatedDescription = truncateDescription(templateParams.childDescription);
+
+                        const htmlSnippet = `
 <div class="service-box" style="background-image: url('${templateParams.childImage}');" data-video-url="${templateParams.childVideo}">
     <div class="service-content">
         <h2>${templateParams.childName}</h2>
@@ -130,19 +126,16 @@ function setupEventListeners() {
     </div>
 </div>`;
 
-                            templateParams.htmlSnippet = htmlSnippet;
+                        templateParams.htmlSnippet = htmlSnippet;
 
-                            emailjs.send('service_evrq6po', 'template_hs8t13e', templateParams)
-                                .then(function(response) {
-                                    alert('تم إرسال البيانات بنجاح!');
-                                    formModal.style.display = 'none';
-                                    document.getElementById('addChildForm').reset();
-                                }, function(error) {
-                                    alert('فشل في إرسال البيانات: ' + error.text);
-                                });
-                        } else {
-                            alert('Failed to upload image. Please try again.');
-                        }
+                        emailjs.send('service_evrq6po', 'template_hs8t13e', templateParams)
+                            .then(function(response) {
+                                alert('تم إرسال البيانات بنجاح!');
+                                formModal.style.display = 'none';
+                                document.getElementById('addChildForm').reset();
+                            }, function(error) {
+                                alert('فشل في إرسال البيانات: ' + error.text);
+                            });
                     })
                     .catch(error => {
                         console.error('Error uploading image:', error);
