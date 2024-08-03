@@ -3,35 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نشاط الكنيسة - اسرة رجاء و خدمة الفلانج</title>
+    <title>نشاط الكنيسة - دعم ذوي الاحتياجات الخاصة</title>
     <link rel="stylesheet" href="styles.css">
-    <meta name="description" content="عشان نعرف بعض اكتر">
+    <meta name="description" content="نشاط الكنيسة لدعم ذوي الاحتياجات الخاصة يتضمن خدمات متنوعة تشمل الدعم الاجتماعي، النقل الميسر، التعليم الخاص، والتوجيه الأسري.">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/compressorjs@1/dist/compressor.min.js"></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
+    <button id="addChildBtn" class="add-child-btn" aria-label="اضف طفل جديد">اضف طفل جديد</button>
     <main>
         <section class="services">
             <h1>خدماتنا</h1>
             <p>اعرف المخدومين اكتر</p>
             <div class="services-container">
-                <div class="service-box" style="background-image: url('images/1.JPG');" onclick="openModal('https://drive.google.com/file/d/1-0w_uSvrWXcxbMaXLu3Ds3JM2qkDdxsE/preview')">
+                <div class="service-box" style="background-image: url('images/1.JPG');" data-video-url="https://drive.google.com/file/d/1-0w_uSvrWXcxbMaXLu3Ds3JM2qkDdxsE/preview" aria-label="هاني اخو سمير">
                     <div class="service-content">
                         <h2>هاني اخو سمير</h2>
                         <p>هو اقرب للطبيعي بس بيحتاج اهتمام</p>
                     </div>
                 </div>
-                <div class="service-box" style="background-image: url('images/2.JPG');" onclick="openModal('https://drive.google.com/file/d/1-0w_uSvrWXcxbMaXLu3Ds3JM2qkDdxsE/preview')">
+                <div class="service-box" style="background-image: url('images/2.JPG');" data-video-url="https://drive.google.com/file/d/1-0w_uSvrWXcxbMaXLu3Ds3JM2qkDdxsE/preview" aria-label="سمير اخو هاني">
                     <div class="service-content">
                         <h2>سمير اخو هاني</h2>
                         <p>هو اقرب للطبيعي بس بيحتاج اهتمام</p>
                     </div>
                 </div>
-                <div class="service-box" style="background-image: url('images/3.JPG');" onclick="openModal('https://drive.google.com/file/d/1-0w_uSvrWXcxbMaXLu3Ds3JM2qkDdxsE/preview')">
+                <div class="service-box" style="background-image: url('images/3.JPG');" data-video-url="https://drive.google.com/file/d/1-0w_uSvrWXcxbMaXLu3Ds3JM2qkDdxsE/preview" aria-label="موريس">
                     <div class="service-content">
                         <h2>موريس</h2>
                         <p>هو اقرب للطبيعي بس بيحتاج اهتمام</p>
                     </div>
                 </div>
-                <div class="service-box" style="background-image: url('images/4.JPG');" onclick="openModal('https://drive.google.com/file/d/1-0w_uSvrWXcxbMaXLu3Ds3JM2qkDdxsE/preview')">
+                <div class="service-box" style="background-image: url('images/4.JPG');" data-video-url="https://drive.google.com/file/d/1-0w_uSvrWXcxbMaXLu3Ds3JM2qkDdxsE/preview" aria-label="رامي">
                     <div class="service-content">
                         <h2>رامي</h2>
                         <p>هو اقرب للطبيعي بس بيحتاج اهتمام</p>
@@ -44,32 +48,28 @@
     <!-- Video Modal -->
     <div id="videoModal" class="modal">
         <div class="modal-content">
+            <span class="close-button" aria-label="Close">&times;</span>
             <iframe id="videoFrame" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
     </div>
 
-    <script>
-        function openModal(videoUrl) {
-            document.getElementById("videoFrame").src = videoUrl;
-            document.getElementById("videoModal").style.display = "flex";
-        }
-
-        function closeModal(event) {
-            const modal = document.getElementById("videoModal");
-            const iframe = document.getElementById("videoFrame");
-
-            if (event.target === modal) {
-                iframe.src = "";
-                modal.style.display = "none";
-            }
-        }
-
-        document.getElementById("videoModal").addEventListener("click", closeModal);
-
-        // Ensure the modal is hidden on page load
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("videoModal").style.display = "none";
-        });
-    </script>
+    <!-- Form Modal -->
+    <div id="formModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" aria-label="Close">&times;</span>
+            <form id="addChildForm">
+                <label for="childName">اسم الطفل</label>
+                <input type="text" id="childName" name="childName" required>
+                <label for="childDescription">نبذة عن الطفل</label>
+                <textarea id="childDescription" name="childDescription" required></textarea>
+                <label for="childImage">صورة الطفل</label>
+                <input type="file" id="childImage" name="childImage" accept="image/*" required>
+                <label for="childVideo">لينك فيديو عن الطفل مرفوع علي جوجل درايف</label>
+                <input type="url" id="childVideo" name="childVideo">
+                <p>بالنسة للفيديو ياريت نتأكد ان معموله شير</p>
+                <button type="submit">اضف الطفل</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
