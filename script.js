@@ -1,4 +1,3 @@
-// Initialize EmailJS
 (function() {
     emailjs.init("wkusqAIi4nGzxMA9b");
 })();
@@ -6,6 +5,10 @@
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("videoModal").style.display = "none";
     document.getElementById("formModal").style.display = "none";
+    document.getElementById("descriptionModal").style.display = "none";
+
+    truncateDescriptions();
+    setupEventListeners();
 });
 
 function openModal(videoUrl) {
@@ -26,105 +29,133 @@ function closeModal(event) {
     }
 }
 
-document.querySelectorAll(".service-box").forEach(box => {
-    box.addEventListener("click", () => {
-        openModal(box.getAttribute("data-video-url"));
+function openDescriptionModal(description) {
+    const modal = document.getElementById("descriptionModal");
+    const descriptionElem = document.getElementById("fullDescription");
+    descriptionElem.textContent = description;
+    modal.style.display = "flex";
+}
+
+function truncateDescriptions() {
+    const serviceBoxes = document.querySelectorAll(".service-box");
+    serviceBoxes.forEach(box => {
+        const descriptionElem = box.querySelector(".service-content p");
+        const fullText = descriptionElem.textContent.trim();
+        const words = fullText.split(/\s+/);
+
+        if (words.length > 20) {
+            const truncatedText = words.slice(0, 20).join(" ") + "...";
+            descriptionElem.textContent = truncatedText;
+
+            const readMoreBtn = document.createElement("button");
+            readMoreBtn.className = "read-more-btn";
+            readMoreBtn.textContent = "Read More";
+            readMoreBtn.addEventListener("click", () => openDescriptionModal(fullText));
+            box.querySelector(".service-content").appendChild(readMoreBtn);
+        }
     });
-});
+}
 
-document.getElementById("videoModal").addEventListener("click", closeModal);
-document.getElementById("formModal").addEventListener("click", closeModal);
+function setupEventListeners() {
+    document.querySelectorAll(".service-box").forEach(box => {
+        box.addEventListener("click", () => {
+            openModal(box.getAttribute("data-video-url"));
+        });
+    });
 
-// Form Modal functionality
-const addChildBtn = document.getElementById('addChildBtn');
-const formModal = document.getElementById('formModal');
+    document.getElementById("videoModal").addEventListener("click", closeModal);
+    document.getElementById("descriptionModal").addEventListener("click", closeModal);
+    document.getElementById("formModal").addEventListener("click", closeModal);
 
-addChildBtn.addEventListener('click', () => {
-    formModal.style.display = 'flex';
-});
+    const addChildBtn = document.getElementById('addChildBtn');
+    const formModal = document.getElementById('formModal');
 
-document.getElementById('addChildForm').addEventListener('submit', function(event) {
-    event.preventDefault();
+    addChildBtn.addEventListener('click', () => {
+        formModal.style.display = 'flex';
+    });
 
-    const formData = new FormData(this);
-    const file = formData.get('childImage');
+    document.getElementById('addChildForm').addEventListener('submit', function(event) {
+        event.preventDefault();
 
-    const templateParams = {
-        userName: formData.get('userName'),
-        childName: formData.get('childName'),
-        childDescription: formData.get('childDescription'),
-        childVideo: transformGoogleDriveLink(formData.get('childVideo'))
-    };
+        const formData = new FormData(this);
+        const file = formData.get('childImage');
 
-    // Compress the image if it's too large
-    new Compressor(file, {
-        quality: 0.6,
-        maxWidth: 800,
-        success(result) {
-            const reader = new FileReader();
-            reader.readAsDataURL(result);
-            reader.onload = function() {
-                const base64String = reader.result.split(',')[1];
-                const byteLength = base64String.length * (3/4);
+        const templateParams = {
+            userName: formData.get('userName'),
+            childName: formData.get('childName'),
+            childDescription: formData.get('childDescription'),
+            childVideo: transformGoogleDriveLink(formData.get('childVideo'))
+        };
 
-                if (byteLength > 10000000) { // 50KB limit
-                    alert('The image is too large. Please select a smaller image.');
-                    return;
-                }
+        new Compressor(file, {
+            quality: 0.6,
+            maxWidth: 800,
+            success(result) {
+                const reader = new FileReader();
+                reader.readAsDataURL(result);
+                reader.onload = function() {
+                    const base64String = reader.result.split(',')[1];
+                    const byteLength = base64String.length * (3/4);
 
-                // Upload image to Imgur
-                const clientId = '5499804b552a3b9'; // Your actual Imgur Client ID
-                const formDataImgur = new FormData();
-                formDataImgur.append('image', result);
+                    if (byteLength > 50000) { // 50KB limit
+                        alert('The image is too large. Please select a smaller image.');
+                        return;
+                    }
 
-                fetch('https://api.imgur.com/3/upload', {
-                    method: 'POST',
-                    headers: {
-                        Authorization: `Client-ID ${clientId}`
-                    },
-                    body: formDataImgur
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const imgurUrl = data.data.link; // Direct link to the image
+                    const clientId = '5499804b552a3b9'; // Your actual Imgur Client ID
+                    const formDataImgur = new FormData();
+                    formDataImgur.append('image', result);
 
-                        templateParams.childImage = imgurUrl;
+                    fetch('https://api.imgur.com/3/upload', {
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Client-ID ${clientId}`
+                        },
+                        body: formDataImgur
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const imgurUrl = data.data.link;
 
-                        const htmlSnippet = `
+                            templateParams.childImage = imgurUrl;
+
+                            const truncatedDescription = truncateDescription(templateParams.childDescription);
+
+                            const htmlSnippet = `
 <div class="service-box" style="background-image: url('${templateParams.childImage}');" data-video-url="${templateParams.childVideo}">
     <div class="service-content">
         <h2>${templateParams.childName}</h2>
-        <p>${templateParams.childDescription}</p>
+        <p class="description">${truncatedDescription}</p>
     </div>
 </div>`;
 
-                        templateParams.htmlSnippet = htmlSnippet;
+                            templateParams.htmlSnippet = htmlSnippet;
 
-                        emailjs.send('service_evrq6po', 'template_hs8t13e', templateParams)
-                            .then(function(response) {
-                                alert('تم إرسال البيانات بنجاح!');
-                                formModal.style.display = 'none';
-                                // Clear form fields
-                                document.getElementById('addChildForm').reset();
-                            }, function(error) {
-                                alert('فشل في إرسال البيانات: ' + error.text);
-                            });
-                    } else {
-                        alert('Failed to upload image. Please try again.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error uploading image:', error);
-                    alert('An error occurred while uploading the image. Please try again.');
-                });
-            };
-        },
-        error(err) {
-            console.error(err.message);
-        },
+                            emailjs.send('service_evrq6po', 'template_hs8t13e', templateParams)
+                                .then(function(response) {
+                                    alert('تم إرسال البيانات بنجاح!');
+                                    formModal.style.display = 'none';
+                                    document.getElementById('addChildForm').reset();
+                                }, function(error) {
+                                    alert('فشل في إرسال البيانات: ' + error.text);
+                                });
+                        } else {
+                            alert('Failed to upload image. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error uploading image:', error);
+                        alert('An error occurred while uploading the image. Please try again.');
+                    });
+                };
+            },
+            error(err) {
+                console.error(err.message);
+            },
+        });
     });
-});
+}
 
 function transformGoogleDriveLink(link) {
     const regex = /\/file\/d\/(.*?)\/view/;
@@ -133,4 +164,12 @@ function transformGoogleDriveLink(link) {
         return `https://drive.google.com/file/d/${match[1]}/preview`;
     }
     return link;
+}
+
+function truncateDescription(description) {
+    const words = description.split(/\s+/);
+    if (words.length > 20) {
+        return words.slice(0, 20).join(" ") + "...";
+    }
+    return description;
 }

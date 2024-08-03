@@ -1,10 +1,18 @@
+/* Global Styles */
+:root {
+    --primary-color: #007acc;
+    --secondary-color: #005b99;
+    --text-color: #333;
+    --background-color: #f4f4f4;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background-color: #f4f4f4;
-    color: #333;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .add-child-btn {
@@ -12,7 +20,7 @@ body {
     top: 20px;
     right: 20px;
     padding: 10px 20px;
-    background-color: #007acc;
+    background-color: var(--primary-color);
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -21,7 +29,7 @@ body {
 }
 
 .add-child-btn:hover {
-    background-color: #005b99;
+    background-color: var(--secondary-color);
 }
 
 .services {
@@ -37,7 +45,7 @@ body {
 .services p {
     font-size: 18px;
     margin-bottom: 40px;
-    color: #007acc;
+    color: var(--primary-color);
 }
 
 .services-container {
@@ -101,9 +109,26 @@ body {
     color: #ccc;
     padding: 0 10px;
     text-align: center;
+    max-height: 3.6em; /* Limit to three lines */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Modal styles */
+.read-more-btn {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.read-more-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+/* Modal Styles */
 .modal {
     display: none; 
     position: fixed; 
@@ -160,7 +185,7 @@ body {
 
 #addChildForm button {
     padding: 10px;
-    background-color: #007acc;
+    background-color: var(--primary-color);
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -168,10 +193,10 @@ body {
 }
 
 #addChildForm button:hover {
-    background-color: #005b99;
+    background-color: var(--secondary-color);
 }
 
-/* Close button styles */
+/* Close Button Styles */
 .close-button {
     position: absolute;
     top: 10px;
