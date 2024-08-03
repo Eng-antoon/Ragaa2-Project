@@ -50,9 +50,10 @@ document.getElementById('addChildForm').addEventListener('submit', function(even
     const file = formData.get('childImage');
 
     const templateParams = {
+        userName: formData.get('userName'),
         childName: formData.get('childName'),
         childDescription: formData.get('childDescription'),
-        childVideo: formData.get('childVideo')
+        childVideo: transformGoogleDriveLink(formData.get('childVideo'))
     };
 
     // Compress the image if it's too large
@@ -66,7 +67,11 @@ document.getElementById('addChildForm').addEventListener('submit', function(even
                 const base64String = reader.result.split(',')[1];
                 const byteLength = base64String.length * (3/4);
 
-               
+                if (byteLength > 10000000) { // 50KB limit
+                    alert('The image is too large. Please select a smaller image.');
+                    return;
+                }
+
                 // Upload image to Imgur
                 const clientId = '5499804b552a3b9'; // Your actual Imgur Client ID
                 const formDataImgur = new FormData();
@@ -87,7 +92,7 @@ document.getElementById('addChildForm').addEventListener('submit', function(even
                         templateParams.childImage = imgurUrl;
 
                         const htmlSnippet = `
-<div class="service-box" style="background-image: url('${templateParams.childImage}');" onclick="openModal('${templateParams.childVideo}')">
+<div class="service-box" style="background-image: url('${templateParams.childImage}');" data-video-url="${templateParams.childVideo}">
     <div class="service-content">
         <h2>${templateParams.childName}</h2>
         <p>${templateParams.childDescription}</p>
@@ -120,3 +125,12 @@ document.getElementById('addChildForm').addEventListener('submit', function(even
         },
     });
 });
+
+function transformGoogleDriveLink(link) {
+    const regex = /\/file\/d\/(.*?)\/view/;
+    const match = link.match(regex);
+    if (match && match[1]) {
+        return `https://drive.google.com/file/d/${match[1]}/preview`;
+    }
+    return link;
+}
